@@ -1,0 +1,50 @@
+version: '3'
+services:
+  productservice:
+    build: ./product
+    container_name: productservice
+#    Expose just internally
+#    ports:
+#      - 5001:80
+    expose:
+      - "80"
+    volumes:
+      - ./product:/usr/src/app
+  website:
+    image: php:apache
+    container_name: website
+    volumes:
+      - ./website:/var/www/html
+    depends_on:
+      - productservice
+    expose:
+      - "80"
+  static:
+    build: ./static
+    container_name: staticpage
+    volumes:
+      - ./static/src:/usr/share/nginx/html
+#    ports:
+#      - 5002:80
+    expose:
+      - "80"
+  usermanagement:
+    build: ./usermanagement
+    container_name: usermanagement
+    volumes:
+      - ./usermanagement/src:/var/www/html
+    expose:
+      - "80"
+  gateway:
+    build: ./gateway
+    container_name: api-gateway
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - productservice
+      - static
+      - usermanagement
+      - website
