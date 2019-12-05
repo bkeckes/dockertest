@@ -11,10 +11,8 @@ services:
     volumes:
       - ./product:/usr/src/app
   website:
-    image: php:apache
+    build: ./website
     container_name: website
-    volumes:
-      - ./website:/var/www/html
     depends_on:
       - productservice
     expose:
@@ -35,6 +33,11 @@ services:
       - ./usermanagement/src:/var/www/html
     expose:
       - "80"
+  db:
+    build: ./db
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: example
   gateway:
     build: ./gateway
     container_name: api-gateway
